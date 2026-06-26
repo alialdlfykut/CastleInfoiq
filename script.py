@@ -22,8 +22,8 @@ def clean_news_text(text):
     if not text:
         return ""
     
-    # 1. حذف التوقيع الصريح (مع مراعاة أي مد أو كشيدة في كلمة اشتـــرك)
-    text = re.sub(r'اشتـ*رك الآن\s*[:-\s]*', '', text)
+    # 1. حذف التوقيع الصريح (تم إصلاح الـ Regex هنا بوضع \- لحل مشكلة bad character range)
+    text = re.sub(r'اشتـ*رك الآن\s*[:\-\s]*', '', text)
     
     # 2. حذف روابط التليجرام أو أي روابط أخرى لضمان عدم خروج المتابع من الفيسبوك
     text = re.sub(r'http\S+|t\.me\/\S+|@\S+', '', text)
@@ -82,7 +82,7 @@ def main():
             if 'tgme_widget_message_video' in item:
                 continue
             
-            # 1. :استخراج النص الأصلي للمنشور
+            # 1. استخراج النص الأصلي للمنشور
             msg_match = re.search(r'<div class="tgme_widget_message_text[^>]*>(.*?)</div>', item, re.DOTALL)
             raw_text = ""
             if msg_match:
