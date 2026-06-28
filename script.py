@@ -8,6 +8,7 @@ from datetime import datetime
 FB_PAGE_ID = os.getenv('FB_PAGE_ID')
 FB_PAGE_TOKEN = os.getenv('FB_TOKEN')
 DB_FILE = "last_news_id.txt"
+# تم تغيير القناة هنا
 SOURCE_CHANNEL = 'CastleInfoiq'
 
 def is_work_time():
@@ -17,7 +18,8 @@ def is_work_time():
 def clean_news_text(text):
     if not text:
         return ""
-    text = re.sub(r'اشتـــرك\s*من\s*الأخبار\s*الآن\s*في\s*قناتنا:\s*👇\s*\n?https://t\.me/CastleInfoiq', '', text)
+    # تم تغيير التوقيع المطلوب حذفه هنا
+    text = re.sub(r'اشتـــرك\s*الآن\s*:\-?\s*https://t\.me/CastleInfoiq', '', text)
     text = re.sub(r'\n\s*\n+', '\n\n', text)
     return text.strip()
 
@@ -57,7 +59,7 @@ def main():
         history = f.read().splitlines()
 
     try:
-        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'}
+        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/120.0.0.0'}
         print(f"🌐 الاتصال بقناة: {SOURCE_CHANNEL}")
         res = requests.get(f"https://t.me/s/{SOURCE_CHANNEL}", headers=headers, timeout=15)
         
@@ -87,7 +89,7 @@ def main():
                 with open(DB_FILE, 'a', encoding='utf-8') as f:
                     f.write(sig + "\n")
                 print("💾 تم حفظ المعرف بنجاح.")
-                time.sleep(5) # إضافة وقت انتظار بسيط بين كل منشور وآخر
+                time.sleep(5)
                 
     except Exception as e:
         print(f"⚠️ خطأ عام: {e}")
