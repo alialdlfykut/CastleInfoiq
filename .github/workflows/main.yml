@@ -6,6 +6,10 @@ on:
     - cron: '*/15 * * * *' 
   workflow_dispatch: # زر التشغيل اليدوي
 
+# 🌟 الإضافة الإحترافية هنا لضمان نجاح الـ git push ومنع تكرار النشر
+permissions:
+  contents: write
+
 jobs:
   run-bot:
     runs-on: ubuntu-latest
