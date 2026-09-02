@@ -31,9 +31,25 @@ def post_to_facebook(message, image_url=None):
             payload = {'message': message, 'access_token': FB_PAGE_TOKEN}
             r = requests.post(url, data=payload)
             
+        # ---------- التعديل الجديد لطباعة وتحديد نوع الخطأ ----------
+        if r.status_code != 200:
+            try:
+                error_data = r.json()
+                error_msg = error_data.get('error', {}).get('message', r.text)
+                error_code = error_data.get('error', {}).get('code', -1)
+                
+                # كود 190 في فيسبوك يعني أن هناك مشكلة في التوكن (منتهي، غير صالح، أو تم تغييره)
+                if error_code == 190:
+                    print(f"❌ خطأ في التوكن (Token Error): التوكن منتهي الصلاحية أو غير صالح. يرجى توليد توكن جديد وتحديثه في إعدادات جيتهاب. تفاصيل الخطأ: {error_msg}")
+                else:
+                    print(f"❌ خطأ من فيسبوك: {error_msg} (كود الخطأ: {error_code})")
+            except Exception:
+                print(f"❌ خطأ غير معروف من فيسبوك: {r.text}")
+        # -----------------------------------------------------------
+                
         return r.status_code == 200
     except Exception as e:
-        print(f"⚠️ خطأ في النشر: {e}")
+        print(f"⚠️ خطأ في الاستعلام: {e}")
         return False
 
 def main():
@@ -54,7 +70,7 @@ def main():
         clean_text = clean_news_text(raw_text)
         
         # استخراج الصورة (إذا وجدت)
-        img_match = re.search(r'background-image:url\(\'([^\']+)\'\)', item)
+        img_match = re.search(r'background-image:url\('([^']+)'\)', item)
         img_url = img_match.group(1) if img_match else None
         
         if post_to_facebook(clean_text, img_url):
